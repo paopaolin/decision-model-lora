@@ -192,6 +192,10 @@ public-231 已被用于拟合温度和挑选 checkpoint，继续在它上面调�
 
 （每格是「覆盖率 / 采纳精度」）
 
+![threshold](docs/figures/threshold_curves.png)
+
+左图简单流量：四条曲线都贴在 99% 以上，0.9 随便用。右图难流量：同样的 0.9，R3 掉到 93.14%，要保住 98% 得把阈值推到 0.99。两个面板的横轴范围不同，不要跨面板比水平位置。
+
 三条操作要点：
 
 **1. 简单流量：0.9 直接可用。** R3+温度覆盖率 94.5%、采纳精度 99.21%，与基线持平略优。
@@ -268,7 +272,7 @@ public-231 已被用于拟合温度和挑选 checkpoint，继续在它上面调�
 │   ├── 08-baseline-four-models.md # 四个基座模型的横评
 │   ├── 09-crossbench.md           # 跨 benchmark 泛化（随机负样本）
 │   ├── 10-crossbench-hard.md      # 跨 benchmark 泛化（难负样本）
-│   └── figures/routing_curve.png
+│   └── figures/                   # routing_curve.png / threshold_curves.png
 ├── src/
 │   ├── eval/                      # 评测集构建与结果分析
 │   ├── data/                      # 审计、去污染、格式转换、跨域集构建

@@ -441,6 +441,16 @@ def main():
               "任何阈值下都达不到，基线则可以（0.990 / 35.0%）。这是「调阈值」与「模型不行」的分界："
               "前者可以靠调参数解决，后者不能。",
          indent_first=True)
+
+    img2 = ROOT / "docs" / "figures" / "threshold_curves.png"
+    if img2.exists():
+        doc.add_picture(str(img2), width=Cm(15.6))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_after = Pt(10)
+        style_run(p.add_run("图 2  阈值-精度曲线：同一阈值在两种流量上的含义完全不同。"
+                            "空心标记为 0.9 工作点；两个面板横轴范围不同，不可跨面板比水平位置"), size=9)
     lp = load_csv("crossbench_hard/layered_policy.csv")
     table(doc, ["模型", "低 margin 阈值", "高 margin 阈值", "覆盖率", "采纳精度", "采纳中出错"],
           [[r["model"], r["threshold_low_margin"], r["threshold_high_margin"],
