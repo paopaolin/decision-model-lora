@@ -61,6 +61,36 @@ R3 在能多采纳 18 条的同时，采纳准确率还略高。完整的阈值�
 
 ---
 
+## 与 Jev 及同生态模型的关系
+
+**Jev 本身没有公开权重，也没有公开参数量。** 它是 TypeSafe AI 的闭源旗舰模型（`jev-1.13.0` / `jev-1.14.0`，2026-09 首发），只通过 `POST https://api.typesafe.ai/v1/systemone` 提供服务，按输入 token 计费（$42/Btok，输出免费），上下文 64k（长上下文开关可到 262k）。
+
+更关键的一点：官方文档明确说明 **Jev 不接受针对客户数据的微调或 LoRA 适配**（"not fine-tuned or LoRA-adapted with customer data, the same weights serve every account"）。所以如果目标是"微调决策模型"，Jev 从设计上就不是候选，只能通过 prompt 侧的 `state` / `instructions` / `criteria` 塑形。
+
+本项目用的 `elephant-1` / `mammoth-1`（Baset Labs）与 OmniJev 的 `OneJev` 系列都属于**同范式的开源复现**，不是 Jev 本身：
+
+| 模型 | 参数量 | 权重 | 可否微调 | Jev Decision Index |
+|---|---|---:|---|---:|
+| **Jev 1.14**（TypeSafe AI） | **未公开** | 闭源 | **否**（官方声明） | 60.2 |
+| Mammoth-1（Baset Labs） | 27B | 开源 | 是 | 71.24（v0.4） |
+| **Elephant-1（Baset Labs）** | **9B** | 开源 | 是（本项目） | — |
+| OneJev1.5-27B（OmniJev） | 27B | 开源 | 是 | 59.9 |
+| OneJev1.5-9B | 9B | 开源 | 是 | 53.3 |
+| OneJev1.5-4B | 4B | 开源 | 是 | 49.2 |
+| OneJev1.5-0.8B | 0.8B | 开源 | 是 | 29.0 |
+| Strands Decider 2B | 2B | 开源 | 是 | 20.7 |
+
+> Jev Decision Index 是 37 个 benchmark 的综合分（榜单共 175 个模型），**与本文的 public-231 准确率不是同一口径**，两列数字不可直接比较。表中分数取自该榜单 2026-10 快照。
+
+从这张表能看出两件事：
+
+1. **闭源的 Jev 得分（60.2）低于多个开源 27B 模型**（Fastino GLiDE 71.5、Lychee-27B 67.3、vLLM-SR d3 67.2）。也就是说在当前开源生态里，规模换性能这条路对决策模型仍然有效——这是本项目能用开源权重做微调实验的前提。
+2. **规模与分数大致单调**（0.8B 29.0 → 4B 49.2 → 9B 53.3 → 27B 59.9），但 Jev 以未知规模落在 27B 梯队中间，说明它的价值主要在闭源服务与 RLCD 训练流程，而非参数量优势。
+
+如果确实要跑 Jev 做对比，只能走付费 API（`/v1/systemone` 与 jevbench 的 typesafe adapter 同接口，换个 endpoint 和 key 即可），且无法获得权重做微调对照。
+
+---
+
 ## 仓库结构
 
 ```

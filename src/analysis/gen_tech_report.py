@@ -176,6 +176,13 @@ def main():
               "注意力为 block-bidirectional）。上限参照为同系列的 mammoth-1（27B）。"
               "另有 Strands 的 Decider-2B 作为小模型参照。三者均以本机 bf16 自托管推理。",
          indent_first=True)
+    para(doc, "需要说明与 Jev 的关系。Jev 是 TypeSafe AI 的闭源模型，官方从未公开其参数量，"
+              "仅通过 API 提供服务，且文档明确指出它不接受针对客户数据的微调或 LoRA 适配。"
+              "因此它无法作为本项目的微调对象，本文所用的是同范式的开源实现。"
+              "截至 2026 年 10 月，Jev Decision Index 榜单上 Jev 得 60.2 分，低于多个开源 27B 模型"
+              "（榜首 71.5），同生态的 OneJev 系列（0.8B/4B/9B/27B）分别为 29.0/49.2/53.3/59.9，"
+              "规模与得分大致单调。这说明该范式的可训练能力目前主要承载于开源权重之上。",
+         indent_first=True)
 
     heading(doc, "2.2  评测集", 2)
     para(doc, "JevBench public-231：231 条公开测试题，覆盖 18 个任务族，分为 easy（48）/ original（72）/ hard（111）三档。"
