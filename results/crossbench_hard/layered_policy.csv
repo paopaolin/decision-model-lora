@@ -1,0 +1,13 @@
+model,margin_cut,threshold_low_margin,threshold_high_margin,coverage_pct,precision_pct,errors
+elephant-1-9b-base,0.878,0.9,0.9,52.7,96.52,22
+elephant-1-9b-base,0.878,0.95,0.9,50.0,97.33,16
+elephant-1-9b-base,0.878,0.97,0.93,49.9,97.33,16
+elephant-1-9b-base,0.878,0.99,0.95,48.6,97.6,14
+elephant-1-9b-r3,0.962,0.9,0.9,57.1,93.14,47
+elephant-1-9b-r3,0.962,0.95,0.9,54.0,95.83,27
+elephant-1-9b-r3,0.962,0.97,0.93,51.6,97.25,17
+elephant-1-9b-r3,0.962,0.99,0.95,50.0,97.5,15
+mammoth-1-27b,0.911,0.9,0.9,52.9,98.11,12
+mammoth-1-27b,0.911,0.95,0.9,50.7,98.36,10
+mammoth-1-27b,0.911,0.97,0.93,50.0,98.33,10
+mammoth-1-27b,0.911,0.99,0.95,50.0,98.33,10

@@ -1,0 +1,9 @@
+set,model,cov_at_0.9_pct,prec_at_0.9_pct,err_at_0.9,thr_for_98,thr_for_99,thr_for_995,cov_at_98_pct,cov_at_99_pct,cov_at_995_pct
+random,elephant-1-9b-base,93.42,99.29,8,0.505,0.845,0.955,99.7,95.2,88.2
+random,elephant-1-9b-r3,96.0,98.78,14,0.605,0.935,0.985,99.4,95.1,88.8
+random,mammoth-1-27b,94.67,99.38,7,0.500,0.755,0.975,99.8,97.8,88.7
+random,elephant-1-9b-r3-temp,94.5,99.21,9,0.535,0.865,0.955,99.6,95.2,89.1
+hard,elephant-1-9b-base,52.67,96.52,22,0.970,0.990,n/a,44.8,35.0,n/a
+hard,elephant-1-9b-r3,57.08,93.14,47,0.990,n/a,n/a,46.4,n/a,n/a
+hard,mammoth-1-27b,52.92,98.11,12,0.900,0.975,0.995,52.9,47.2,36.0
+hard,elephant-1-9b-r3-temp,53.92,95.98,26,0.965,0.995,n/a,46.8,22.6,n/a
