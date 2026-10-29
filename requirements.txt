@@ -1,0 +1,24 @@
+# 推理与训练
+torch==2.8.0
+transformers==5.19.0
+peft==0.21.2
+causal-conv1d==1.7.0
+tilelang==0.1.15
+accelerate>=1.0
+
+# 数据处理
+pyarrow>=14.0
+datasets>=2.20
+huggingface-hub>=0.30
+pandas>=2.0
+
+# 服务
+fastapi>=0.115
+uvicorn>=0.30
+
+# 分析
+matplotlib>=3.8
+numpy>=1.26
+
+# 文档
+python-docx>=1.1

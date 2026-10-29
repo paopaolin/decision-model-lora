@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv*/
+venv/
+
+# 模型权重（体积大，通过 scripts/ 下载）
+models/
+*.safetensors
+*.bin
+*.pt
+
+# 数据集（通过 src/data/ 脚本重建）
+data/
+hf-cache/
+uv-cache/
+tmp/
+
+# 运行产物
+logs/
+runs/
+train_runs/
+raw/
+
+# 系统
+.DS_Store
+Thumbs.db

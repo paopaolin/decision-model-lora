@@ -1,0 +1,9 @@
+model,run_dir,accuracy,n_correct,n_scorable,brier,ece,p50_s,p95_s
+decider-2b,decider2b_base,0.7792,180,231,0.2803,0.0752,0.133,0.277
+elephant-1-9b,elephant1_base,0.9004,208,231,0.1289,0.0338,0.149,0.227
+elephant-1-r1-hard,elephant1_r1,0.9048,209,231,0.1724,0.084,0.134,0.202
+elephant-1-r2-soft,elephant1_r2,0.9004,208,231,0.1369,0.0337,0.136,0.203
+elephant-1-r2-soft-temp,elephant1_r2_cal,0.9004,208,231,0.1342,0.0322,0.145,0.218
+elephant-1-r3-soft2ep,elephant1_r3,0.9091,210,231,0.1395,0.0549,0.157,0.227
+elephant-1-r3-soft2ep-temp,elephant1_r3_cal,0.9091,210,231,0.1346,0.0502,0.149,0.228
+mammoth-1-27b,mammoth1_base,0.9394,217,231,0.0828,0.0194,0.256,0.472
