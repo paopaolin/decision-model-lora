@@ -1,0 +1,3 @@
+set,ece_raw,ece_scaled_T1.31,hi_cov_raw_pct,hi_cov_scaled_pct,hi_errors_raw,hi_errors_scaled
+random,0.0113,0.0071,96.0,94.5,14,9
+hard,0.1625,0.1345,57.08,53.92,47,26
