@@ -238,6 +238,37 @@ adapter 目录里的 `readout.json` 记录了训练时的 `attention=noncausal`�
 
 ---
 
+## 评测范围（重要）
+
+JevBench 的公开 manifest 共 7 个 split、425 条：
+
+| split | 条数 | 本仓库 | 说明 |
+|---|---:|---|---|
+| easy | 48 | ✅ 已用 | 随仓库分发 |
+| original | 72 | ✅ 已用 | 随仓库分发 |
+| hard | 111 | ✅ 已用 | 随仓库分发 |
+| heldout | 24 | ❌ 封存 | 只有 sha256，不含正文 |
+| router | 78 | ❌ 封存 | 同上 |
+| judge | 68 | ❌ 封存 | 同上 |
+| easy-heldout | 24 | ❌ 封存 | 同上 |
+
+**本文所有数字都只覆盖 231/425（54%）的公开可跑部分。** 其余 194 条与官方另外 308 条 sealed 决策题不对外分发，只公布哈希和聚合统计；完整评测需要向 Benchmark Heaven 提交模型。
+
+两条必须注意的合规要求（引自 jevbench README）：
+
+1. **"Training on the public split must be disclosed."** 本项目的训练数据与这 231 条做过四层去污染（六项重合均为 0），但**用这 231 条拟合了温度参数、并用它挑选 checkpoint**，按此要求应在报告中披露。这一点已在「局限性」第 1 条中说明。
+2. **"A leaderboard score does not establish reliability on your workload."** 单一 benchmark 的分数不能外推。
+
+### 想验证泛化性该用什么
+
+如果要回答"微调是否只对训练分布有效、有没有损伤通用决策能力"，建议另找独立数据集，而不是继续在 public-231 上做文章。可行来源：
+
+- **arXiv 2609.37647**（波恩大学 / Lamarr / Fraunhofer）在 **37 个公开数据集、346,009 条请求**上评测过 Jev，全部可从 HuggingFace 加载，含 Banking77、CLINC150、SST-2、ARC、MMLU 等，是现成的跨域评测清单。
+- Jev Decision Index 的 37 个 benchmark 分五个领域，但其中计入总分的私有测试不公开。
+- 注意训练数据与这些数据集的重叠：本项目的训练源是 OneJev-Data / When2Call / DROP，与上述分类数据集无交集，因此可以直接用来观察**灾难性遗忘**。
+
+---
+
 ## 局限性（诚实清单）
 
 1. **温度是在 public-231 上拟合的**，属于测试集调参（1 个自由度）。报告中的 ECE 0.0502 应理解为上界，正式结论需要独立校准集。
