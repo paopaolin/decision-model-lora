@@ -1,0 +1,5 @@
+model,accuracy_pct,n_correct,n,gold_prob,nll,mean_conf,hi_cov_pct,hi_precision_pct,hi_errors,p50_latency_s
+elephant-1-9b-base,97.92,1175,1200,0.9631,0.0737,0.976,93.42,99.29,8,0.1333
+elephant-1-9b-r3,97.83,1174,1200,0.9714,0.0779,0.9867,96.0,98.78,14,0.1418
+elephant-1-9b-r3-temp,97.83,1174,1200,0.9638,0.0735,0.9775,94.5,99.21,9,0.1418
+mammoth-1-27b,98.33,1180,1200,0.9715,0.0597,0.9809,94.67,99.38,7,0.2753

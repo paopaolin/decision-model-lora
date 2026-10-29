@@ -1,0 +1,80 @@
+{
+  "banking77": {
+    "n": 300,
+    "state_chars": {
+      "mean": 55.7,
+      "median": 43,
+      "max": 316
+    },
+    "option_counts": {
+      "8": 300
+    },
+    "gold_position": {
+      "0": 39,
+      "1": 40,
+      "2": 39,
+      "3": 35,
+      "4": 49,
+      "5": 36,
+      "6": 31,
+      "7": 31
+    }
+  },
+  "clinc150": {
+    "n": 300,
+    "state_chars": {
+      "mean": 40.3,
+      "median": 38,
+      "max": 113
+    },
+    "option_counts": {
+      "8": 300
+    },
+    "gold_position": {
+      "0": 32,
+      "1": 39,
+      "2": 46,
+      "3": 37,
+      "4": 25,
+      "5": 45,
+      "6": 42,
+      "7": 34
+    }
+  },
+  "arc": {
+    "n": 300,
+    "state_chars": {
+      "mean": 134.4,
+      "median": 120,
+      "max": 831
+    },
+    "option_counts": {
+      "3": 2,
+      "4": 298
+    },
+    "gold_position": {
+      "0": 57,
+      "1": 79,
+      "2": 87,
+      "3": 77
+    }
+  },
+  "imdb": {
+    "n": 300,
+    "state_chars": {
+      "mean": 1141.7,
+      "median": 1016,
+      "max": 2371
+    },
+    "option_counts": {
+      "2": 300
+    },
+    "gold_position": {
+      "0": 129,
+      "1": 171
+    }
+  },
+  "_total": 1200,
+  "_seed": 42,
+  "_note": "8-way constructed for banking77/clinc150; native options for arc; binary for imdb"
+}

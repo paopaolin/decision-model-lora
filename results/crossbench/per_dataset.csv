@@ -1,0 +1,5 @@
+dataset,elephant-1-9b-base,elephant-1-9b-r3,elephant-1-9b-r3-temp,mammoth-1-27b
+banking77,98.67,98.67,98.67,99.0
+clinc150,99.33,99.0,99.0,99.33
+ai2_arc,97.0,97.0,97.0,99.0
+imdb,96.67,96.67,96.67,96.0
