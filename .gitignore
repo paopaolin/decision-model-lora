@@ -11,8 +11,8 @@ models/
 *.bin
 *.pt
 
-# 数据集（通过 src/data/ 脚本重建）
-data/
+# 数据集（通过 src/data/ 脚本重建）—— 只忽略仓库根目录的数据，别把 src/data/ 的代码一起吃掉
+/data/
 hf-cache/
 uv-cache/
 tmp/
