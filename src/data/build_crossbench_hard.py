@@ -24,10 +24,14 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 import pyarrow.parquet as pq
-from huggingface_hub import hf_hub_download
 
-CB = Path("/work/data/crossbench")
-RAW = CB / "raw"
+import os
+
+# 从哪个目录读输入、写输出。默认当前目录（仓库根），可用 XB_ROOT 覆盖。
+HERE = Path(os.environ.get("XB_ROOT", Path.cwd()))
+CB = HERE / "results" / "crossbench"     # 输入：随机负样本版 all.jsonl
+RAW = HERE / "_raw"                      # 两个意图分类训练集（见 scripts/fetch_raw.sh）
+OUT = HERE / "results" / "crossbench_hard"   # 输出目录
 NEG = 7
 SEED = 42
 
@@ -51,6 +55,15 @@ def class_names(path: Path, field: str) -> list[str]:
 
 def humanize(label: str) -> str:
     return label.replace("_", " ").replace("-", " ").strip().lower()
+
+
+def canon(s: str) -> str:
+    """规范化到唯一形式：小写、非字母数字折叠成单空格。
+
+    用于判定"同一个类别的不同拼写"——原始类别名 activate_my_card 与展示名
+    activate my card 必须被视为同一个标签，否则会出现 gold 在选项里出现两次。
+    """
+    return re.sub(r"[^a-z0-9]+", " ", str(s).lower()).strip()
 
 
 class TfidfSpace:
@@ -100,12 +113,17 @@ class TfidfSpace:
         return sorted(scored, key=lambda x: -x[1])
 
 
-def build_intent(name: str, repo: str, train_file: str, test_slug: str, field: str,
+def build_intent(name: str, parquet: Path, field: str,
                  limit_classes: set[str] | None, existing: list[dict], rng: random.Random):
-    train_path = Path(hf_hub_download(repo, train_file, repo_type="dataset",
-                                      local_dir=str(RAW / test_slug)))
-    names = class_names(train_path, field)
-    rows = pq.read_table(train_path, columns=["text", field]).to_pylist()
+    """构造难负集。
+
+    关键：gold 在 all.jsonl 里存的是 humanize 后的展示名（"activate my card"），
+    而质心空间里的类别名是原始形式（"activate_my_card"）。**两者必须用同一个
+    canonical 形式比较**，否则 `c != gold` 永远成立，正确类别会被当成干扰项
+    再放进选项里 —— 结果是同一个语义类别以两种拼写同时出现，模型只能猜哪个算对。
+    """
+    names = class_names(parquet, field)
+    rows = pq.read_table(parquet, columns=["text", field]).to_pylist()
     print(f"{name}: 训练集 {len(rows)} 行, {len(names)} 类")
 
     by_class: dict[str, list[str]] = defaultdict(list)
@@ -119,23 +137,37 @@ def build_intent(name: str, repo: str, train_file: str, test_slug: str, field: s
     allowed = set(by_class)
 
     out, hard_sims, rand_sims, same_prefix = [], [], [], 0
+    skipped_short = 0
     for t in existing:
-        gold = t["expected"]
-        ranked = [(c, s) for c, s in space.rank(t["state"]) if c in allowed and c != gold]
-        negs = ranked[:NEG]
+        gold = t["expected"]                 # 已 humanize，例如 "age limit"
+        gcanon = canon(gold)                 # 比较与去重一律走 canonical
+        ranked = [(c, s) for c, s in space.rank(t["state"])
+                  if c in allowed and canon(c) != gcanon]
+
+        # 按 canonical 去重后取前 NEG 个，避免同义不同拼写的类别重复出现
+        negs, seen = [], {gcanon}
+        for c, s in ranked:
+            k = canon(c)
+            if k in seen:
+                continue
+            seen.add(k)
+            negs.append((c, s))
+            if len(negs) >= NEG:
+                break
         if len(negs) < NEG:
+            skipped_short += 1
             continue
+
+        # 展示名唯一，gold 只出现一次
         opts = [humanize(gold)] + [humanize(c) for c, _ in negs]
         exp = humanize(gold)
-        if len(set(opts)) != len(opts):  # 归一化碰撞，回退原名
-            opts = [gold] + [c for c, _ in negs]
-            exp = gold
+        assert len({canon(o) for o in opts}) == len(opts), f"{t['id']}: 选项 canonical 冲突"
         rng.shuffle(opts)
 
         hard_sims.append(sum(s for _, s in negs) / len(negs))
-        # 随机基线：同样从候选里随机取 7 个，量一下"难"了多少倍
-        pool = [c for c in allowed if c != gold]
-        pick = rng.sample(pool, NEG)
+        # 随机基线：同样从候选里按 canonical 去重后随机取 7 个
+        pool = sorted({canon(c): c for c in allowed if canon(c) != gcanon}.items())
+        pick = rng.sample([c for _, c in pool], NEG)
         q = space.query(t["state"])
         rand_sims.append(sum(
             sum(v * space.centroids[c].get(k, 0.0) for k, v in q.items()) for c in pick
@@ -180,22 +212,19 @@ def main():
     for t in base:
         by_fam[t["family"]].append(t)
 
-    b77, s77 = build_intent("banking77", "PolyAI/banking77",
-                            "data/train-00000-of-00001.parquet", "banking77", "label",
+    b77, s77 = build_intent("banking77", RAW / "banking77_train.parquet", "label",
                             None, by_fam["banking77"], rng)
-    clinc_classes = set(class_names(
-        Path(hf_hub_download("clinc/clinc_oos", "plus/train-00000-of-00001.parquet",
-                             repo_type="dataset", local_dir=str(RAW / "clinc"))),
-        "intent")) - {"out_of_scope"}
-    cl, sl = build_intent("clinc150", "clinc/clinc_oos",
-                          "plus/train-00000-of-00001.parquet", "clinc", "intent",
+    clinc_pq = RAW / "clinc_plus_train.parquet"
+    clinc_classes = set(class_names(clinc_pq, "intent")) - {"out_of_scope"}
+    cl, sl = build_intent("clinc150", clinc_pq, "intent",
                           clinc_classes, by_fam["clinc150"], rng)
 
     # arc / imdb 原样带入：它们没有负样本概念，换负样本对它们无意义
     keep = [t for t in base if t["family"] in ("ai2_arc", "imdb")]
     all_tasks = b77 + cl + keep
 
-    with (CB / "all_hard.jsonl").open("w", encoding="utf-8") as f:
+    OUT.mkdir(parents=True, exist_ok=True)
+    with (OUT / "all_hard.jsonl").open("w", encoding="utf-8") as f:
         for t in all_tasks:
             f.write(json.dumps(t, ensure_ascii=False) + "\n")
 
@@ -205,8 +234,8 @@ def main():
             "unchanged": {"ai2_arc": len(keep) // 2, "imdb": len(keep) // 2}}
     # 修正 unchanged 计数
     meta["unchanged"] = {k: sum(1 for t in keep if t["family"] == k) for k in ("ai2_arc", "imdb")}
-    (CB / "meta_hard.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False))
-    print(f"\n合计 {len(all_tasks)} 条 -> {CB / 'all_hard.jsonl'}")
+    (OUT / "meta_hard.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False))
+    print(f"\n合计 {len(all_tasks)} 条 -> {OUT / 'all_hard.jsonl'}")
 
 
 if __name__ == "__main__":

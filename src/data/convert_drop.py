@@ -146,7 +146,10 @@ def main():
         ans_s, dis_s = fmt(ans), [fmt(d) for d in dis]
         options = [ans_s] + dis_s
         rng.shuffle(options)                       # 打乱，消除位置捷径
-        crit = {o: ("正确计算结果" if o == ans_s else "干扰项") for o in options}
+        # 描述必须中性且统一。这里曾经写成 "正确计算结果"/"干扰项"，而 qev 把
+        # criteria 的 value 渲染成 "选项: 描述" 并放进模型输入 —— 等于在提示里
+        # 直接标出正确答案，模型可以只学"挑写着正确的那个"，完全不看材料。
+        crit = {o: "" for o in options}
 
         used_passage[g] += 1
         kept.append({

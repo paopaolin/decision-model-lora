@@ -26,3 +26,6 @@ raw/
 # 系统
 .DS_Store
 Thumbs.db
+
+# 难负集重建所需的原始训练集（见 scripts/fetch_raw.sh）
+/_raw/

@@ -4,15 +4,15 @@
   "_note": "同查询、同正确标签、同选项数，仅把 7 个干扰项换成 TF-IDF 最相似意图",
   "banking77": {
     "n": 300,
-    "hard_neg_cosine": 0.2357,
-    "random_neg_cosine": 0.0469,
-    "negatives_sharing_a_token": 1353
+    "hard_neg_cosine": 0.1917,
+    "random_neg_cosine": 0.0425,
+    "negatives_sharing_a_token": 1262
   },
   "clinc150": {
     "n": 300,
-    "hard_neg_cosine": 0.1634,
-    "random_neg_cosine": 0.0134,
-    "negatives_sharing_a_token": 516
+    "hard_neg_cosine": 0.1239,
+    "random_neg_cosine": 0.0122,
+    "negatives_sharing_a_token": 396
   },
   "unchanged": {
     "ai2_arc": 300,
